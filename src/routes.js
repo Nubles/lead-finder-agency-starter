@@ -1,11 +1,38 @@
 import { createCheerioRouter } from '@crawlee/cheerio';
 
 const EMAIL_REGEX = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
-const PHONE_REGEX = /(?:\+44\s?|0)(?:\d[\s().-]?){9,12}\d/g;
 const SOCIAL_HOSTS = ['facebook.com', 'instagram.com', 'linkedin.com', 'x.com', 'twitter.com', 'tiktok.com'];
+
+const PHONE_PATTERNS = {
+    US: /(?:\+1\s?|1\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g,
+    CA: /(?:\+1\s?|1\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g,
+    UK: /(?:\+44\s?|0)(?:\d[\s().-]?){9,12}\d/g,
+    AU: /(?:\+?61\s?|0)[23478](?:[\s.-]?\d){8}/g,
+    Global: /(?:\+1\s?|1\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|(?:\+44\s?|0)(?:\d[\s().-]?){9,12}\d|(?:\+?61\s?|0)[23478](?:[\s.-]?\d){8}/g
+};
+
+const INVALID_EMAIL_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.css', '.js', '.woff', '.woff2', '.ttf', '.otf', '.ico', '.pdf', '.mp4', '.mp3'];
 
 const clean = (value) => value?.replace(/\s+/g, ' ').trim() ?? '';
 const unique = (values) => [...new Set(values.map(clean).filter(Boolean))];
+
+const filterEmails = (emailsList) => {
+    return unique(
+        emailsList
+            .map((email) => email.toLowerCase())
+            .filter((email) => {
+                const hasAssetExtension = INVALID_EMAIL_EXTENSIONS.some((ext) => email.endsWith(ext));
+                const isWellFormed = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(email);
+                return isWellFormed && !hasAssetExtension;
+            })
+    );
+};
+
+const getPhones = (text, country) => {
+    const pattern = PHONE_PATTERNS[country] || PHONE_PATTERNS.Global;
+    const matches = text.match(pattern) ?? [];
+    return unique(matches);
+};
 
 const classifyLead = ({ emails, phones, contactUrls, socialUrls, title, description }) => {
     let score = 0;
@@ -29,7 +56,7 @@ const getAbsoluteUrl = (href, baseUrl) => {
     }
 };
 
-export const router = ({ followLinks, maxFollowLinksPerPage }) => {
+export const router = ({ followLinks, maxFollowLinksPerPage, targetCountry }) => {
     const crawlerRouter = createCheerioRouter();
 
     crawlerRouter.addDefaultHandler(async ({ enqueueLinks, request, $, log, pushData }) => {
@@ -39,8 +66,8 @@ export const router = ({ followLinks, maxFollowLinksPerPage }) => {
         const h1 = clean($('h1').first().text());
         const description = clean($('meta[name="description"]').attr('content'));
         const pageText = $('body').text();
-        const emails = unique(pageText.match(EMAIL_REGEX) ?? []);
-        const phones = unique(pageText.match(PHONE_REGEX) ?? []);
+        const emails = filterEmails(pageText.match(EMAIL_REGEX) ?? []);
+        const phones = getPhones(pageText, targetCountry);
 
         const links = $('a')
             .toArray()

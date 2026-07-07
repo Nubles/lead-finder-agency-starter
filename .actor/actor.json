@@ -1,9 +1,9 @@
 {
     "$schema": "https://apify.com/schemas/v1/actor.ide.json",
     "actorSpecification": 1,
-    "name": "lead-finder-agency-starter",
-    "title": "Agency Lead Finder Starter",
-    "description": "Finds business contact and outreach signals from directory, search, and profile pages.",
+    "name": "agency-lead-finder-pro",
+    "title": "Agency Lead Finder Pro",
+    "description": "Scans business directories, search pages, and company profiles to extract high-intent contact signals and qualify B2B leads.",
     "version": "0.1",
     "meta": {
         "templateId": "js-crawlee-cheerio",

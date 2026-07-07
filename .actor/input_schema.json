@@ -15,6 +15,15 @@
                 }
             ]
         },
+        "targetCountry": {
+            "title": "Target Country for Phones",
+            "type": "string",
+            "description": "Select the target country to use optimized phone number pattern matching.",
+            "editor": "select",
+            "default": "Global",
+            "enum": ["Global", "US", "UK", "CA", "AU"],
+            "enumTitles": ["Global (All Formats)", "United States (+1 / US)", "United Kingdom (+44 / UK)", "Canada (+1 / CA)", "Australia (+61 / AU)"]
+        },
         "maxRequestsPerCrawl": {
             "title": "Max Pages",
             "type": "integer",

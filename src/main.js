@@ -11,6 +11,7 @@ const {
     followLinks = true,
     maxFollowLinksPerPage = 8,
     useProxy = false,
+    targetCountry = 'Global',
 } = (await Actor.getInput()) ?? {};
 
 const proxyConfiguration = useProxy ? await Actor.createProxyConfiguration() : undefined;
@@ -18,7 +19,7 @@ const proxyConfiguration = useProxy ? await Actor.createProxyConfiguration() : u
 const crawler = new CheerioCrawler({
     proxyConfiguration,
     maxRequestsPerCrawl,
-    requestHandler: router({ followLinks, maxFollowLinksPerPage }),
+    requestHandler: router({ followLinks, maxFollowLinksPerPage, targetCountry }),
 });
 
 await crawler.run(startUrls);
