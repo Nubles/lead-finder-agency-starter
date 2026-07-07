@@ -1,0 +1,18 @@
+{
+    "$schema": "https://apify.com/schemas/v1/actor.ide.json",
+    "actorSpecification": 1,
+    "name": "lead-finder-agency-starter",
+    "title": "Agency Lead Finder Starter",
+    "description": "Finds business contact and outreach signals from directory, search, and profile pages.",
+    "version": "0.1",
+    "meta": {
+        "templateId": "js-crawlee-cheerio",
+        "generatedBy": "codex"
+    },
+    "input": "./input_schema.json",
+    "output": "./output_schema.json",
+    "storages": {
+        "dataset": "./dataset_schema.json"
+    },
+    "dockerfile": "../Dockerfile"
+}

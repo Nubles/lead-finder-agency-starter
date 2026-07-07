@@ -1,0 +1,43 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "Agency Lead Finder Starter",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Search or Directory URLs",
+            "type": "array",
+            "description": "Pages to scan for business contact signals. Use search result pages, directory pages, or business profile pages.",
+            "editor": "requestListSources",
+            "prefill": [
+                {
+                    "url": "https://www.yell.com/ucs/UcsSearchAction.do?keywords=dentist&location=Manchester"
+                }
+            ]
+        },
+        "maxRequestsPerCrawl": {
+            "title": "Max Pages",
+            "type": "integer",
+            "description": "Maximum number of pages to scan.",
+            "default": 50
+        },
+        "followLinks": {
+            "title": "Follow Useful Links",
+            "type": "boolean",
+            "description": "Follow contact, about, services, and profile links found on each page.",
+            "default": true
+        },
+        "maxFollowLinksPerPage": {
+            "title": "Max Follow Links Per Page",
+            "type": "integer",
+            "description": "Maximum number of useful links to enqueue from each scanned page.",
+            "default": 8
+        },
+        "useProxy": {
+            "title": "Use Apify Proxy",
+            "type": "boolean",
+            "description": "Enable only if your Apify account has Proxy access.",
+            "default": false
+        }
+    }
+}
