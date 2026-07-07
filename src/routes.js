@@ -1,4 +1,5 @@
 import { createCheerioRouter } from '@crawlee/cheerio';
+import { Actor } from 'apify';
 
 const EMAIL_REGEX = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const SOCIAL_HOSTS = ['facebook.com', 'instagram.com', 'linkedin.com', 'x.com', 'twitter.com', 'tiktok.com'];
@@ -110,6 +111,8 @@ export const router = ({ followLinks, maxFollowLinksPerPage, targetCountry }) =>
             leadStatus,
             scrapedAt: new Date().toISOString(),
         });
+
+        await Actor.charge({ eventName: 'lead-found', count: 1 });
 
         log.info(`Saved ${leadStatus} lead signals`, { url: loadedUrl, title });
 
