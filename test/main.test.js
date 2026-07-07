@@ -11,7 +11,7 @@ describe('CheerioCrawler', () => {
     it('should crawl a page and extract data to dataset', async () => {
         const crawler = new CheerioCrawler({
             maxRequestsPerCrawl: 10,
-            requestHandler: router,
+            requestHandler: router({ followLinks: false, targetCountry: 'Global' }),
         });
 
         await crawler.run(['https://www.example.com']);
@@ -20,7 +20,7 @@ describe('CheerioCrawler', () => {
 
         const { items } = await crawler.getData();
         expect(items.length).toBeGreaterThan(0);
-        expect(items[0].url).toContain('example.com');
-        expect(items[0].title).toContain('Example Domain');
+        expect(items[0].sourceUrl).toContain('example.com');
+        expect(items[0].pageTitle).toContain('Example Domain');
     }, 30_000);
 });
