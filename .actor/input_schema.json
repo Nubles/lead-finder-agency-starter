@@ -1,17 +1,17 @@
 {
     "$schema": "https://apify.com/schemas/v1/input.ide.json",
-    "title": "Agency Lead Finder Starter",
+    "title": "CheerioCrawler Template",
     "type": "object",
     "schemaVersion": 1,
     "properties": {
         "startUrls": {
-            "title": "Search or Directory URLs",
+            "title": "Start URLs",
             "type": "array",
-            "description": "Pages to scan for business contact signals. Use search result pages, directory pages, or business profile pages.",
+            "description": "URLs to start with.",
             "editor": "requestListSources",
             "prefill": [
                 {
-                    "url": "https://www.yell.com/ucs/UcsSearchAction.do?keywords=dentist&location=Manchester"
+                    "url": "https://crawlee.dev"
                 }
             ]
         },
@@ -22,13 +22,25 @@
             "editor": "select",
             "default": "Global",
             "enum": ["Global", "US", "UK", "CA", "AU"],
-            "enumTitles": ["Global (All Formats)", "United States (+1 / US)", "United Kingdom (+44 / UK)", "Canada (+1 / CA)", "Australia (+61 / AU)"]
+            "enumTitles": [
+                "Global (All Formats)",
+                "United States (+1 / US)",
+                "United Kingdom (+44 / UK)",
+                "Canada (+1 / CA)",
+                "Australia (+61 / AU)"
+            ]
+        },
+        "enableCharging": {
+            "title": "Enable Pay-Per-Event Charging",
+            "type": "boolean",
+            "description": "Enable only after Apify Store paid events are configured for this Actor.",
+            "default": false
         },
         "maxRequestsPerCrawl": {
-            "title": "Max Pages",
+            "title": "Max Requests per Crawl",
             "type": "integer",
-            "description": "Maximum number of pages to scan.",
-            "default": 50
+            "description": "Maximum number of requests that can be made by this crawler.",
+            "default": 100
         },
         "followLinks": {
             "title": "Follow Useful Links",

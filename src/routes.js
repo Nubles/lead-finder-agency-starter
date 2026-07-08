@@ -1,4 +1,4 @@
-import { createCheerioRouter } from '@crawlee/cheerio';
+﻿import { createCheerioRouter } from '@crawlee/cheerio';
 import { Actor } from 'apify';
 
 const EMAIL_REGEX = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
@@ -9,10 +9,27 @@ const PHONE_PATTERNS = {
     CA: /(?:\+1\s?|1\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g,
     UK: /(?:\+44\s?|0)(?:\d[\s().-]?){9,12}\d/g,
     AU: /(?:\+?61\s?|0)[23478](?:[\s.-]?\d){8}/g,
-    Global: /(?:\+1\s?|1\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|(?:\+44\s?|0)(?:\d[\s().-]?){9,12}\d|(?:\+?61\s?|0)[23478](?:[\s.-]?\d){8}/g
+    Global: /(?:\+1\s?|1\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|(?:\+44\s?|0)(?:\d[\s().-]?){9,12}\d|(?:\+?61\s?|0)[23478](?:[\s.-]?\d){8}/g,
 };
 
-const INVALID_EMAIL_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.css', '.js', '.woff', '.woff2', '.ttf', '.otf', '.ico', '.pdf', '.mp4', '.mp3'];
+const INVALID_EMAIL_EXTENSIONS = [
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.svg',
+    '.webp',
+    '.css',
+    '.js',
+    '.woff',
+    '.woff2',
+    '.ttf',
+    '.otf',
+    '.ico',
+    '.pdf',
+    '.mp4',
+    '.mp3',
+];
 
 const clean = (value) => value?.replace(/\s+/g, ' ').trim() ?? '';
 const unique = (values) => [...new Set(values.map(clean).filter(Boolean))];
@@ -25,7 +42,7 @@ const filterEmails = (emailsList) => {
                 const hasAssetExtension = INVALID_EMAIL_EXTENSIONS.some((ext) => email.endsWith(ext));
                 const isWellFormed = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(email);
                 return isWellFormed && !hasAssetExtension;
-            })
+            }),
     );
 };
 
@@ -57,7 +74,7 @@ const getAbsoluteUrl = (href, baseUrl) => {
     }
 };
 
-export const router = ({ followLinks, maxFollowLinksPerPage, targetCountry }) => {
+export const router = ({ followLinks, maxFollowLinksPerPage, targetCountry, enableCharging = false }) => {
     const crawlerRouter = createCheerioRouter();
 
     crawlerRouter.addDefaultHandler(async ({ enqueueLinks, request, $, log, pushData }) => {
@@ -112,7 +129,13 @@ export const router = ({ followLinks, maxFollowLinksPerPage, targetCountry }) =>
             scrapedAt: new Date().toISOString(),
         });
 
-        await Actor.charge({ eventName: 'lead-found', count: 1 });
+        if (enableCharging) {
+            try {
+                await Actor.charge({ eventName: 'lead-found', count: 1 });
+            } catch (error) {
+                log.warning('Charging skipped for lead-found event', { error: error.message });
+            }
+        }
 
         log.info(`Saved ${leadStatus} lead signals`, { url: loadedUrl, title });
 
